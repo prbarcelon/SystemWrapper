@@ -128,6 +128,7 @@
     <Compile Include="Microsoft.Win32\RegistryWrap.cs" />
     <Compile Include="Microsoft.Win32\SafeHandles\SafeFileHandleWrap.cs" />
     <Compile Include="Microsoft.Win32\SafeHandles\SafeRegistryHandleWrap.cs" />
+    <Compile Include="Net\DnsWrap.cs" />
     <Compile Include="Net\HttpWebRequestWrap.cs" />
     <Compile Include="Net\HttpWebRequestWrapFactory.Generated.cs" />
     <Compile Include="Net\HttpWebResponseWrap.cs" />
