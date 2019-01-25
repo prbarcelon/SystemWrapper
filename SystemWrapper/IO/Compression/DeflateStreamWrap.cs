@@ -1,3 +1,4 @@
+﻿using System;
 using System.IO.Compression;
 using SystemInterface.IO;
 using SystemInterface.IO.Compression;
@@ -42,6 +43,9 @@ namespace SystemWrapper.IO.Compression
         #endregion Constructors and Initializers
 
         /// <inheritdoc />
+        public DeflateStream DeflateStreamInstance { get; private set; }
+
+        /// <inheritdoc />
         public int Read(byte[] array, int offset, int count)
         {
             return DeflateStreamInstance.Read(array, offset, count);
@@ -51,6 +55,11 @@ namespace SystemWrapper.IO.Compression
         public void Write(byte[] array, int offset, int count)
         {
             DeflateStreamInstance.Write(array, offset, count);
+        }
+
+        public void CopyTo(IStream destination)
+        {
+            DeflateStreamInstance.CopyTo(destination.StreamInstance);
         }
 
         /// <inheritdoc />
@@ -66,6 +75,19 @@ namespace SystemWrapper.IO.Compression
         }
 
         /// <inheritdoc />
-        public DeflateStream DeflateStreamInstance { get; private set; }
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(true);
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        /// <param name="disposing">Indicates whether or not unmanaged resources should be disposed.</param>
+        protected virtual void Dispose(bool disposing)
+        {
+            DeflateStreamInstance.Dispose();
+        }
     }
 }

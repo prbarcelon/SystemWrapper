@@ -1,12 +1,12 @@
 ﻿using System;
+using System.Collections;
 using System.IO;
+using System.IO.MemoryMappedFiles;
 using System.Security;
 using System.Security.Permissions;
 
 namespace SystemInterface
 {
-    using System.IO.MemoryMappedFiles;
-
     /// <summary>
     /// Provides information about, and means to manipulate, the current environment and platform.
     /// </summary>
@@ -345,5 +345,196 @@ namespace SystemInterface
         /// For full access to the resource protected by this permission. Associated enumeration: <see cref="PermissionState.Unrestricted"/>.
         /// </permission>
         long WorkingSet { get; }
+
+        /// <summary>
+        /// Replaces the name of each environment variable embedded in the specified string with the string equivalent of the value of the variable, then returns the resulting string.
+        /// </summary>
+        /// <param name="name">A string containing the names of zero or more environment variables. Each environment variable is quoted with the percent sign character (%).</param>
+        /// <returns>A string with each environment variable replaced by its value.</returns>
+        /// <remarks>
+        /// <para>
+        /// COM interop is used to retrieve the environment variables from the operating system. 
+        /// If the environment variables cannot be retrieved due to a COM error, the HRESULT that explains the cause of the failure is used to generate one of several
+        /// possible exceptions; that is, the exception depends on the HRESULT. 
+        /// For more information about how the HRESULT is processed, see the Remarks section of the Marshal.ThrowExceptionForHR method.
+        /// </para>
+        /// <para>
+        /// Replacement only occurs for environment variables that are set. For example, suppose name is "MyENV = %MyENV%".
+        /// If the environment variable, MyENV, is set to 42, this method returns "MyENV = 42". If MyENV is not set, no change occurs; this method returns "MyENV = %MyENV%".
+        /// </para>
+        /// <para>
+        /// The size of the return value is limited to 32K.
+        /// </para>
+        /// </remarks>
+        string ExpandEnvironmentVariables(string name);
+
+        /// <summary>
+        /// Gets the path to the system special folder that is identified by the specified enumeration.
+        /// </summary>
+        /// <param name="folder">An enumerated constant that identifies a system special folder.</param>
+        /// <returns>
+        /// The path to the specified system special folder, if that folder physically exists on your computer; otherwise, an empty string ("").
+        /// 
+        /// <para>
+        /// A folder will not physically exist if the operating system did not create it, the existing folder was deleted, or the folder
+        /// is a virtual directory, such as My Computer, which does not correspond to a physical path.
+        /// </para>
+        /// </returns>
+        string GetFolderPath(Environment.SpecialFolder folder);
+
+        /// <summary>
+        /// Gets the path to the system special folder that is identified by the specified enumeration, and uses a specified option for accessing special folders.
+        /// </summary>
+        /// <param name="folder">An enumerated constant that identifies a system special folder.</param>
+        /// <param name="option">Specifies options to use for accessing a special folder.</param>
+        /// <returns>
+        /// The path to the specified system special folder, if that folder physically exists on your computer; otherwise, an empty string ("").
+        /// 
+        /// <para>
+        /// A folder will not physically exist if the operating system did not create it, the existing folder was deleted, or the folder is a virtual directory,
+        /// such as My Computer, which does not correspond to a physical path.
+        /// </para>
+        /// </returns>
+        string GetFolderPath(Environment.SpecialFolder folder, Environment.SpecialFolderOption option);
+
+        void Exit(int exitCode);
+        
+        [SecurityCritical]
+        void FailFast(string message);
+
+        [SecurityCritical]
+        void FailFast(string message, Exception exception);
+
+        //
+        // Summary:
+        //     Returns a string array containing the command-line arguments for the current
+        //     process.
+        //
+        // Returns:
+        //     An array of string where each element contains a command-line argument. The first
+        //     element is the executable file name, and the following zero or more elements
+        //     contain the remaining command-line arguments.
+        //
+        // Exceptions:
+        //   T:System.NotSupportedException:
+        //     The system does not support command-line arguments.
+        [SecuritySafeCritical]
+        string[] GetCommandLineArgs();
+
+        [SecuritySafeCritical]
+        string GetEnvironmentVariable(string variable);
+
+        //
+        // Summary:
+        //     Retrieves the value of an environment variable from the current process or from
+        //     the Windows operating system registry key for the current user or local machine.
+        //
+        // Parameters:
+        //   variable:
+        //     The name of an environment variable.
+        //
+        //   target:
+        //     One of the System.EnvironmentVariableTarget values.
+        //
+        // Returns:
+        //     The value of the environment variable specified by the variable and target parameters,
+        //     or null if the environment variable is not found.
+        //
+        // Exceptions:
+        //   T:System.ArgumentNullException:
+        //     variable is null.
+        //
+        //   T:System.ArgumentException:
+        //     target is not a valid System.EnvironmentVariableTarget value.
+        //
+        //   T:System.Security.SecurityException:
+        //     The caller does not have the required permission to perform this operation.
+        [SecuritySafeCritical]
+        string GetEnvironmentVariable(string variable, EnvironmentVariableTarget target);
+
+        [SecuritySafeCritical]
+        IDictionary GetEnvironmentVariables();
+
+        //
+        // Summary:
+        //     Retrieves all environment variable names and their values from the current process,
+        //     or from the Windows operating system registry key for the current user or local
+        //     machine.
+        //
+        // Parameters:
+        //   target:
+        //     One of the System.EnvironmentVariableTarget values.
+        //
+        // Returns:
+        //     A dictionary that contains all environment variable names and their values from
+        //     the source specified by the target parameter; otherwise, an empty dictionary
+        //     if no environment variables are found.
+        //
+        // Exceptions:
+        //   T:System.Security.SecurityException:
+        //     The caller does not have the required permission to perform this operation for
+        //     the specified value of target.
+        //
+        //   T:System.ArgumentException:
+        //     target contains an illegal value.
+        [SecuritySafeCritical]
+        IDictionary GetEnvironmentVariables(EnvironmentVariableTarget target);
+
+        //
+        // Summary:
+        //     Returns an array of string containing the names of the logical drives on the
+        //     current computer.
+        //
+        // Returns:
+        //     An array of strings where each element contains the name of a logical drive.
+        //     For example, if the computer's hard drive is the first logical drive, the first
+        //     element returned is "C:\".
+        //
+        // Exceptions:
+        //   T:System.IO.IOException:
+        //     An I/O error occurs.
+        //
+        //   T:System.Security.SecurityException:
+        //     The caller does not have the required permissions.
+        [SecuritySafeCritical]
+        string[] GetLogicalDrives();
+
+        [SecuritySafeCritical]
+        void SetEnvironmentVariable(string variable, string value);
+
+        //
+        // Summary:
+        //     Creates, modifies, or deletes an environment variable stored in the current process
+        //     or in the Windows operating system registry key reserved for the current user
+        //     or local machine.
+        //
+        // Parameters:
+        //   variable:
+        //     The name of an environment variable.
+        //
+        //   value:
+        //     A value to assign to variable.
+        //
+        //   target:
+        //     One of the enumeration values that specifies the location of the environment
+        //     variable.
+        //
+        // Exceptions:
+        //   T:System.ArgumentNullException:
+        //     variable is null.
+        //
+        //   T:System.ArgumentException:
+        //     variable contains a zero-length string, an initial hexadecimal zero character
+        //     (0x00), or an equal sign ("="). -or-The length of variable is greater than or
+        //     equal to 32,767 characters.-or-target is not a member of the System.EnvironmentVariableTarget
+        //     enumeration. -or-target is System.EnvironmentVariableTarget.Machine or System.EnvironmentVariableTarget.User,
+        //     and the length of variable is greater than or equal to 255.-or-target is System.EnvironmentVariableTarget.Process
+        //     and the length of value is greater than or equal to 32,767 characters. -or-An
+        //     error occurred during the execution of this operation.
+        //
+        //   T:System.Security.SecurityException:
+        //     The caller does not have the required permission to perform this operation.
+        [SecuritySafeCritical]
+        void SetEnvironmentVariable(string variable, string value, EnvironmentVariableTarget target);
     }
 }

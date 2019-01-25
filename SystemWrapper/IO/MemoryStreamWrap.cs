@@ -2,6 +2,8 @@ using System;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Security.Permissions;
+using System.Threading;
+using System.Threading.Tasks;
 using SystemInterface.IO;
 
 namespace SystemWrapper.IO
@@ -405,7 +407,67 @@ namespace SystemWrapper.IO
         /// <inheritdoc />
         public void Dispose()
         {
+            Dispose(true);
+            GC.SuppressFinalize(true);
+        }
+
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        /// <param name="disposing">Indicates whether or not unmanaged resources should be disposed.</param>
+        protected virtual void Dispose(bool disposing)
+        {
             MemoryStreamInstance.Dispose();
+        }
+
+        public async Task FlushAsync()
+        {
+            await MemoryStreamInstance.FlushAsync();
+        }
+
+        public async Task<int> ReadAsync(byte[] buffer, int offset, int count)
+        {
+            return await MemoryStreamInstance.ReadAsync(buffer, offset, count);
+        }
+
+        public async Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
+        {
+            return await MemoryStreamInstance.ReadAsync(buffer, offset, count, cancellationToken);
+        }
+
+        public async Task WriteAsync(byte[] buffer, int offset, int count)
+        {
+            await MemoryStreamInstance.WriteAsync(buffer, offset, count);
+        }
+
+        public async Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
+        {
+            await MemoryStreamInstance.WriteAsync(buffer, offset, count, cancellationToken);
+        }
+
+        public void CopyTo(IStream destination)
+        {
+            StreamInstance.CopyTo(destination.StreamInstance);
+        }
+
+        public void CopyTo(IStream destination, int bufferSize)
+        {
+            StreamInstance.CopyTo(destination.StreamInstance, bufferSize);
+        }
+
+        public async Task CopyToAsync(IStream destination)
+        {
+            await StreamInstance.CopyToAsync(destination.StreamInstance);
+        }
+
+        public async Task CopyToAsync(IStream destination, int bufferSize)
+        {
+            await StreamInstance.CopyToAsync(destination.StreamInstance, bufferSize);
+        }
+
+        public async Task CopyToAsync(IStream destination, int bufferSize, CancellationToken cancellationToken)
+        {
+            await StreamInstance.CopyToAsync(destination.StreamInstance, bufferSize, cancellationToken);
         }
     }
 }

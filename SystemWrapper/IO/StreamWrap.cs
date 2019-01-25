@@ -2,7 +2,8 @@
 {
     using System;
     using System.IO;
-
+    using System.Threading;
+    using System.Threading.Tasks;
     using SystemInterface.IO;
 
     /// <summary>
@@ -212,6 +213,16 @@
         /// </summary>
         public void Dispose()
         {
+            Dispose(true);
+            GC.SuppressFinalize(true);
+        }
+
+        /// <summary>
+        ///     Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+        /// </summary>
+        /// <param name="disposing">Indicates whether or not unmanaged resources should be disposed.</param>
+        protected virtual void Dispose(bool disposing)
+        {
             this.StreamInstance.Dispose();
         }
 
@@ -249,6 +260,11 @@
             this.StreamInstance.Flush();
         }
 
+        public async Task FlushAsync()
+        {
+            await StreamInstance.FlushAsync();
+        }
+
         /// <summary>
         ///     When overridden in a derived class, reads a sequence of bytes from the current stream and advances the position within the stream by the 
         ///     number of bytes read.
@@ -272,6 +288,16 @@
                         int count)
         {
             return this.StreamInstance.Read(buffer, offset, count);
+        }
+
+        public async Task<int> ReadAsync(byte[] buffer, int offset, int count)
+        {
+            return await StreamInstance.ReadAsync(buffer, offset, count);
+        }
+
+        public async Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
+        {
+            return await StreamInstance.ReadAsync(buffer, offset, count, cancellationToken);
         }
 
         /// <summary>
@@ -348,6 +374,16 @@
             this.StreamInstance.Write(buffer, offset, count);
         }
 
+        public async Task WriteAsync(byte[] buffer, int offset, int count)
+        {
+            await StreamInstance.WriteAsync(buffer, offset, count);
+        }
+
+        public async Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
+        {
+            await StreamInstance.WriteAsync(buffer, offset, count, cancellationToken);
+        }
+
         /// <summary>
         ///     Writes a byte to the current position in the stream and advances the position within the stream by one byte. 
         /// </summary>
@@ -357,6 +393,31 @@
         public void WriteByte(byte value)
         {
             this.StreamInstance.WriteByte(value);
+        }
+
+        public void CopyTo(IStream destination)
+        {
+            StreamInstance.CopyTo(destination.StreamInstance);
+        }
+
+        public void CopyTo(IStream destination, int bufferSize)
+        {
+            StreamInstance.CopyTo(destination.StreamInstance, bufferSize);
+        }
+
+        public async Task CopyToAsync(IStream destination)
+        {
+            await StreamInstance.CopyToAsync(destination.StreamInstance);
+        }
+
+        public async Task CopyToAsync(IStream destination, int bufferSize)
+        {
+            await StreamInstance.CopyToAsync(destination.StreamInstance, bufferSize);
+        }
+
+        public async Task CopyToAsync(IStream destination, int bufferSize, CancellationToken cancellationToken)
+        {
+            await StreamInstance.CopyToAsync(destination.StreamInstance, bufferSize, cancellationToken);
         }
 
         #endregion
