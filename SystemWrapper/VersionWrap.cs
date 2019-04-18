@@ -194,7 +194,7 @@ namespace SystemWrapper
         /// <inheritdoc />
         public bool Equals(IVersion obj)
         {
-            return VersionInstance.Equals(obj.VersionInstance);
+            return VersionInstance.Equals(obj?.VersionInstance);
         }
 
         /// <inheritdoc />
