@@ -28,6 +28,12 @@ namespace SystemWrapper.Net.Sockets
         }
 
         /// <inheritdoc />
+        public async Task ConnectAsync(string host, int port)
+        {
+            await Instance.ConnectAsync(host, port);
+        }
+
+        /// <inheritdoc />
         public INetworkStream GetStream()
         {
             return new NetworkStreamWrap(Instance.GetStream());
